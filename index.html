@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Email Handling Notes — NetSTAR Support</title>
+<style>
+  :root{
+    --ink:#1c2128;
+    --paper:#f6f4ef;
+    --paper-raised:#ffffff;
+    --line:#dcd7cc;
+    --standard:#2f6f5e;
+    --standard-bg:#eaf3ef;
+    --urgent:#b3401f;
+    --urgent-bg:#fbe9e2;
+    --urgent-bg-strong:#f3d3c4;
+    --muted:#6b6457;
+    --mono-bg:#23272f;
+    --mono-ink:#e7e2d6;
+    --accent:#c98a2e;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family: "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    line-height:1.5;
+    padding:0 0 80px;
+  }
+
+  .wrap{
+    max-width:980px;
+    margin:0 auto;
+    padding:0 28px;
+  }
+
+  /* ---------- Header ---------- */
+  header.page-head{
+    border-bottom:3px solid var(--ink);
+    padding:48px 0 26px;
+    margin-bottom:36px;
+  }
+  .eyebrow{
+    font-family:"Courier New",monospace;
+    font-size:12px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin:0 0 10px;
+  }
+  h1.title{
+    font-size:42px;
+    margin:0 0 8px;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  .subtitle{
+    font-size:16px;
+    color:var(--muted);
+    margin:0;
+    max-width:620px;
+  }
+
+  /* ---------- Section dividers ---------- */
+  .lane{
+    margin-bottom:54px;
+  }
+  .lane-head{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:6px;
+  }
+  .lane-tag{
+    font-family:"Courier New",monospace;
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    padding:4px 10px;
+    border-radius:3px;
+    font-weight:700;
+  }
+  .lane-tag.standard{ background:var(--standard-bg); color:var(--standard); }
+  .lane-tag.urgent{ background:var(--urgent-bg-strong); color:var(--urgent); }
+
+  .lane h2{
+    font-size:26px;
+    margin:0;
+    font-weight:600;
+  }
+  .lane-desc{
+    color:var(--muted);
+    font-size:14.5px;
+    margin:6px 0 22px;
+    max-width:680px;
+  }
+
+  /* ---------- Table ---------- */
+  table.flow{
+    width:100%;
+    border-collapse:collapse;
+    background:var(--paper-raised);
+    border:1px solid var(--line);
+    box-shadow:0 1px 0 rgba(0,0,0,0.02);
+  }
+  table.flow.urgent-table{
+    border:1px solid #e3c2af;
+  }
+
+  table.flow th{
+    text-align:left;
+    font-family:"Courier New",monospace;
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--muted);
+    font-weight:600;
+    padding:14px 18px;
+    border-bottom:1px solid var(--line);
+    background:#f1eee6;
+  }
+  table.flow.urgent-table th{
+    background:#f6e7df;
+    color:#8a4b30;
+  }
+
+  table.flow td{
+    padding:18px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+    font-size:15px;
+  }
+  table.flow tr:last-child td{ border-bottom:none; }
+
+  td.col-step{
+    width:64px;
+    font-family:"Courier New",monospace;
+    font-size:20px;
+    font-weight:700;
+    color:var(--accent);
+    text-align:center;
+  }
+  table.urgent-table td.col-step{ color:var(--urgent); }
+
+  td.col-action{ width:230px; font-weight:600; }
+  td.col-action .sub{
+    display:block;
+    font-weight:400;
+    font-size:13px;
+    color:var(--muted);
+    margin-top:3px;
+  }
+
+  td.col-detail{ color:#3a3f47; }
+
+  .pill{
+    display:inline-block;
+    font-family:"Courier New",monospace;
+    font-size:10.5px;
+    letter-spacing:0.07em;
+    text-transform:uppercase;
+    padding:2px 8px;
+    border-radius:999px;
+    margin-left:8px;
+    vertical-align:1px;
+  }
+  .pill.no-reply{ background:#ece5f7; color:#5a3c8a; }
+  .pill.teams{ background:#e2eefb; color:#2c5e8a; }
+
+  /* ---------- Email template block ---------- */
+  .email-card{
+    margin-top:10px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    overflow:hidden;
+    background:#fffefb;
+  }
+  .email-card.urgent-card{ border-color:#e3c2af; }
+
+  .email-card-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:9px 14px;
+    background:#ece7da;
+    font-family:"Courier New",monospace;
+    font-size:11px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .urgent-card .email-card-bar{ background:#f1ddd0; color:#8a4b30; }
+
+  .copy-btn{
+    font-family:"Courier New",monospace;
+    font-size:11px;
+    letter-spacing:0.04em;
+    background:var(--ink);
+    color:#fff;
+    border:none;
+    padding:5px 11px;
+    border-radius:3px;
+    cursor:pointer;
+    transition:opacity .15s ease;
+  }
+  .copy-btn:hover{ opacity:0.82; }
+  .copy-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .copy-btn.copied{ background:var(--standard); }
+
+  .email-body{
+    padding:18px 20px 20px;
+    font-size:14.5px;
+    white-space:pre-wrap;
+    color:#2a2d33;
+  }
+  .email-body .addr{
+    color:#2c5e8a;
+  }
+  .email-body .sign{
+    color:var(--muted);
+  }
+  .email-body .bracket{
+    background:#fff3c4;
+    padding:0 2px;
+    border-radius:2px;
+  }
+
+  /* ---------- Quick reference strip ---------- */
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 22px;
+    margin:0 0 40px;
+    padding:14px 18px;
+    border:1px dashed var(--line);
+    border-radius:6px;
+    font-size:13.5px;
+    color:var(--muted);
+    align-items:center;
+  }
+  .legend strong{ color:var(--ink); font-weight:600; }
+  .legend .dot{
+    display:inline-block;
+    width:9px;height:9px;
+    border-radius:50%;
+    margin-right:6px;
+    vertical-align:-1px;
+  }
+  .dot.standard{ background:var(--standard); }
+  .dot.urgent{ background:var(--urgent); }
+
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:12.5px;
+    margin-top:20px;
+    font-family:"Courier New",monospace;
+    letter-spacing:0.04em;
+  }
+
+  @media (max-width:720px){
+    h1.title{ font-size:32px; }
+    td.col-action{ width:auto; }
+    table.flow, table.flow thead{ display:block; }
+    table.flow thead{ display:none; }
+    table.flow tr{
+      display:block;
+      padding:16px 0;
+      border-bottom:1px solid var(--line);
+    }
+    table.flow td{
+      display:block;
+      border-bottom:none;
+      padding:4px 18px;
+    }
+    td.col-step{
+      width:auto;
+      text-align:left;
+      font-size:13px;
+    }
+    td.col-step::before{ content:"STEP "; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .copy-btn{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="page-head">
+    <p class="eyebrow">NetSTAR Support — Cebu Team · Internal Reference</p>
+    <h1 class="title">Email Handling Notes</h1>
+    <p class="subtitle">How to respond to inbound customer email, split by matter type. Follow the matter's lane top to bottom — Standard and Urgent are handled differently from the first message.</p>
+  </header>
+
+  <div class="legend">
+    <span><span class="dot standard"></span><strong>Standard Email Matter</strong> — acknowledge once, then track in Teams</span>
+    <span><span class="dot urgent"></span><strong>Urgent Matter</strong> — respond immediately, every time, per SLA</span>
+  </div>
+
+  <!-- ================= STANDARD ================= -->
+  <section class="lane">
+    <div class="lane-head">
+      <span class="lane-tag standard">Lane 01</span>
+      <h2>Standard Email Matter</h2>
+    </div>
+    <p class="lane-desc">Covers ordinary, non-urgent inquiries. The customer hears from you once at intake — after that, updates live in Teams, not in their inbox.</p>
+
+    <p style="font-family:'Courier New',monospace; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin:0 0 10px;">First Entry — Initial Inquiry</p>
+
+    <table class="flow">
+      <thead>
+        <tr>
+          <th style="width:64px;">Step</th>
+          <th style="width:230px;">Action</th>
+          <th>What to do</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-step">1</td>
+          <td class="col-action">Send acknowledgment email<span class="sub">to the customer</span></td>
+          <td class="col-detail">
+            Let the customer know their inquiry was received and is waiting on the right person to pick it up.
+            <div class="email-card">
+              <div class="email-card-bar">
+                <span>Template · Acknowledgment</span>
+                <button class="copy-btn" data-target="tpl-standard">Copy text</button>
+              </div>
+              <div class="email-body" id="tpl-standard">Dear <span class="bracket">[Mario]</span>,
+
+Thank you for reaching out to us. We acknowledge receipt of your inquiry and have noted the details you shared. Please rest assured that we are waiting for the appropriate person to handle your request, and we will provide you with an update as soon as possible.
+
+We appreciate your patience and understanding.
+
+Best regards,
+
+NetSTAR Support
+<span class="addr">incompass_support@netstar-inc.com</span></div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="col-step">2</td>
+          <td class="col-action">Report in Teams<span class="pill teams">Teams</span></td>
+          <td class="col-detail">Log the inquiry in Teams so the right person can pick it up.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="font-family:'Courier New',monospace; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin:30px 0 10px;">Follow-up Entries</p>
+
+    <table class="flow">
+      <thead>
+        <tr>
+          <th style="width:64px;">Step</th>
+          <th style="width:230px;">Action</th>
+          <th>What to do</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-step">1</td>
+          <td class="col-action">Report the update in Teams<span class="pill teams">Teams</span></td>
+          <td class="col-detail">Post the latest status or development on the matter in Teams.</td>
+        </tr>
+        <tr>
+          <td class="col-step">2</td>
+          <td class="col-action">No reply needed<span class="pill no-reply">No customer reply</span></td>
+          <td class="col-detail">The customer already received the acknowledgment at intake — do not send another email for follow-up updates.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ================= URGENT ================= -->
+  <section class="lane">
+    <div class="lane-head">
+      <span class="lane-tag urgent">Lane 02</span>
+      <h2>Urgent Matter</h2>
+    </div>
+    <p class="lane-desc">Every entry on an urgent matter gets an immediate customer-facing response — there is no "first entry vs. follow-up" split like Standard. Speed and SLA language matter here.</p>
+
+    <p style="font-family:'Courier New',monospace; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:#8a4b30; margin:0 0 10px;">All Entries</p>
+
+    <table class="flow urgent-table">
+      <thead>
+        <tr>
+          <th style="width:64px;">Step</th>
+          <th style="width:230px;">Action</th>
+          <th>What to do</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-step">1</td>
+          <td class="col-action">Send initial response immediately<span class="sub">to the customer, every time</span></td>
+          <td class="col-detail">
+            Confirm the urgent request was received and is being handled under SLA. Don't wait — this goes out right away.
+            <div class="email-card urgent-card">
+              <div class="email-card-bar">
+                <span>Template · Urgent acknowledgment</span>
+                <button class="copy-btn" data-target="tpl-urgent">Copy text</button>
+              </div>
+              <div class="email-body" id="tpl-urgent">Dear <span class="bracket">[Name]</span>,
+
+This email is to confirm that we have your "urgent" support request. The NetSTAR support team has been made aware of the issue and we are now processing the request and will handle per the terms of SLA. We appreciate your cooperation,
+
+NetSTAR Support
+<span class="addr">incompass_urgent@netstar-inc.com</span></div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="col-step">2</td>
+          <td class="col-action">Report in Teams as Urgent<span class="pill teams">Teams · Urgent</span></td>
+          <td class="col-detail">Log the matter in Teams and flag it as Urgent so it gets the right visibility and priority.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>NetSTAR Support · Cebu Team — Internal reference, not for client distribution</footer>
+
+</div>
+
+<script>
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var target = document.getElementById(btn.getAttribute('data-target'));
+      var text = target.innerText;
+      navigator.clipboard.writeText(text).then(function(){
+        var original = btn.textContent;
+        btn.textContent = 'Copied';
+        btn.classList.add('copied');
+        setTimeout(function(){
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1600);
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
